@@ -37,7 +37,7 @@ function Get-FolderSize {
         [string]$FolderPath
     )
     $size = (Get-ChildItem -Path $FolderPath -Recurse -Force | Measure-Object -Property Length -Sum).Sum
-    return [math]::round($size / 1MB, 2)  # Returns size in MB
+    return $size / 1MB  # Returns size in MB
 }
 
 # Define a function that gets called for every change:
@@ -71,9 +71,19 @@ function Invoke-SomeAction {
     # Only print the new folder size if it has changed
     if ($currentFolderSize -ne $script:previousFolderSize) {
         $sizeChange = $currentFolderSize - $script:previousFolderSize
+        
+        # Check if the change is less than 1 MB
+        if ([math]::Abs($sizeChange) -lt 1 -and $sizeChange -ne 0) {
+            # Round up to the next decimal place if less than 1 MB
+            $roundedSizeChange = [math]::Ceiling($sizeChange * 10) / 10
+        } else {
+            # Round to one decimal place if 1 MB or more
+            $roundedSizeChange = [math]::Round($sizeChange, 1)
+        }
+
         $changeDirection = if ($sizeChange -gt 0) { "increased" } else { "decreased" }
 
-        Write-Host "Current folder size: $currentFolderSize MB (Change: $sizeChange MB, $changeDirection)" -ForegroundColor Cyan
+        Write-Host "Current folder size: $currentFolderSize MB (Change: $roundedSizeChange MB, $changeDirection)" -ForegroundColor Cyan
         $script:previousFolderSize = $currentFolderSize  # Update the previous size
     }
 }
