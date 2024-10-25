@@ -1,6 +1,6 @@
 # Folder Watcher
 A PowerShell script that monitors a folder for changes (create, modify, delete) and also displays the changes.
-
+This program saves the log to the `FileChangeLog.txt` file for the folder path that the program is currently monitoring.
 ## Usage
 
 `.\folder_watcher.ps1 <folder-path>`
